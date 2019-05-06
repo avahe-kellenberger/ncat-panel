@@ -16,6 +16,7 @@ public class CommandPane extends JPanel {
     private static final long serialVersionUID = -5550674321804283838L;
 
     private final JTextField txtLocalFilePath, txtRemoteFilePath;
+    private final JTextArea txtCommandOutput;
 
     public CommandPane() {
         super();
@@ -103,10 +104,10 @@ public class CommandPane extends JPanel {
             fileTransferPanel.add(this.txtRemoteFilePath);
 
             // txtCommandOutput
-            final JTextArea txtCommandOutput = new JTextArea();
+            txtCommandOutput = new JTextArea();
             txtCommandOutput.setBackground(Color.GRAY);
             txtCommandOutput.setEnabled(false);
-            txtCommandOutput.setText("Command Output Panel (2019):\n\n>\n");
+            txtCommandOutput.setText("Command Output Panel (2019):\r\n\r\n> ");
             layout.putConstraint(SpringLayout.WEST, txtCommandOutput, 0, SpringLayout.WEST, buttonsPanel);
             layout.putConstraint(SpringLayout.EAST, txtCommandOutput, 0, SpringLayout.EAST, buttonsPanel);
             layout.putConstraint(SpringLayout.NORTH, txtCommandOutput, 4, SpringLayout.SOUTH, fileTransferPanel);
@@ -122,43 +123,47 @@ public class CommandPane extends JPanel {
     }
 
     private void whoAmI(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("whoami");
     }
 
     private void systemInfo(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("systeminfo");
     }
 
     private void netconfig(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("netconfig");
     }
 
     private void schTasks(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("schtasks");
     }
 
     private void taskList(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("task list");
     }
 
     private void ipconfig(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("ipconfig");
     }
 
     private void netstat(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("netstat");
     }
 
     private void upload(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("upload");
     }
 
     private void download(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("download");
     }
 
     private void selectLocalFile(final ActionEvent e) {
-        System.out.println("Test");
+        this.log("select local file");
+    }
+
+    private void log(final String text) {
+        this.txtCommandOutput.setText(this.txtCommandOutput.getText() + text + "\r\n> ");
     }
 
 }
