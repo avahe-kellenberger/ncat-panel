@@ -15,7 +15,7 @@ public class GUI extends JFrame {
     public GUI(final String title) {
         super(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(800, 600);
+        this.setSize(1000, 600);
         this.setLocationRelativeTo(null);
 
         final Container contentPane = this.getContentPane();

@@ -23,7 +23,7 @@ public class CommandPane extends JPanel {
         this.setLayout(layout);
 
         final JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setPreferredSize(new Dimension(0, 400));
+        buttonsPanel.setPreferredSize(new Dimension(0, 500));
 
         final JButton btnWhoAmI = new JButton("whoami /all");
         btnWhoAmI.addActionListener(this::whoAmI);
@@ -54,6 +54,7 @@ public class CommandPane extends JPanel {
         buttonsPanel.add(btnNetstat);
 
         layout.putConstraint(SpringLayout.NORTH, buttonsPanel, 4, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.SOUTH, buttonsPanel, 72, SpringLayout.SOUTH, btnNetstat);
         layout.putConstraint(SpringLayout.WEST, buttonsPanel, 4, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.EAST, buttonsPanel, -4, SpringLayout.EAST, this);
         this.add(buttonsPanel);
@@ -61,35 +62,63 @@ public class CommandPane extends JPanel {
         {
             final SpringLayout fileTransferLayout = new SpringLayout();
             final JPanel fileTransferPanel = new JPanel(fileTransferLayout);
+            fileTransferPanel.setPreferredSize(new Dimension(0, 85));
+
             final JButton btnUpload = new JButton("Upload");
-            fileTransferLayout.putConstraint(SpringLayout.WEST, btnUpload, 4, SpringLayout.WEST, fileTransferPanel);
+            this.txtLocalFilePath = new JTextField(24);
+            this.txtLocalFilePath.setPreferredSize(new Dimension(0, 24));
+            final JButton btnSelectLocalFile = new JButton("Select local file...");
+            final JButton btnDownload = new JButton("Download");
+            this.txtRemoteFilePath = new JTextField(24);
+            this.txtRemoteFilePath.setPreferredSize(new Dimension(0, 24));
+
+            // btnUpload
+            fileTransferLayout.putConstraint(SpringLayout.WEST, btnUpload, 0, SpringLayout.WEST, fileTransferPanel);
+            fileTransferLayout.putConstraint(SpringLayout.EAST, btnUpload, 0, SpringLayout.EAST, this.txtLocalFilePath);
             btnUpload.addActionListener(this::upload);
             fileTransferPanel.add(btnUpload);
 
-            final JButton btnDownload = new JButton("Download");
-            btnDownload.addActionListener(this::download);
-            fileTransferPanel.add(btnDownload);
+            // txtLocalFilePath
+            fileTransferLayout.putConstraint(SpringLayout.WEST, this.txtLocalFilePath, 0, SpringLayout.WEST, btnUpload);
+            fileTransferLayout.putConstraint(SpringLayout.NORTH, this.txtLocalFilePath, 4, SpringLayout.SOUTH, btnUpload);
+            fileTransferPanel.add(this.txtLocalFilePath);
 
-            final JButton btnSelectLocalFile = new JButton("Select local file...");
+            // btnSelectLocalFile
+            fileTransferLayout.putConstraint(SpringLayout.WEST, btnSelectLocalFile, 4, SpringLayout.EAST, this.txtLocalFilePath);
+            fileTransferLayout.putConstraint(SpringLayout.NORTH, btnSelectLocalFile, 0, SpringLayout.NORTH, this.txtLocalFilePath);
+            fileTransferLayout.putConstraint(SpringLayout.SOUTH, btnSelectLocalFile, 0, SpringLayout.SOUTH, this.txtLocalFilePath);
             btnSelectLocalFile.addActionListener(this::selectLocalFile);
             fileTransferPanel.add(btnSelectLocalFile);
 
-            this.txtLocalFilePath = new JTextField();
-            fileTransferPanel.add(txtLocalFilePath);
+            // btnDownload
+            fileTransferLayout.putConstraint(SpringLayout.NORTH, btnDownload, 0, SpringLayout.NORTH, btnUpload);
+            fileTransferLayout.putConstraint(SpringLayout.WEST, btnDownload, 0, SpringLayout.WEST, btnSelectLocalFile);
+            fileTransferLayout.putConstraint(SpringLayout.EAST, btnDownload, 0, SpringLayout.EAST, btnSelectLocalFile);
+            btnDownload.addActionListener(this::download);
+            fileTransferPanel.add(btnDownload);
 
-            this.txtRemoteFilePath = new JTextField();
-            fileTransferPanel.add(txtRemoteFilePath);
+            // txtRemoteFilePath
+            fileTransferLayout.putConstraint(SpringLayout.WEST, this.txtRemoteFilePath, 0, SpringLayout.WEST, this.txtLocalFilePath);
+            fileTransferLayout.putConstraint(SpringLayout.NORTH, this.txtRemoteFilePath, 4, SpringLayout.SOUTH, this.txtLocalFilePath);
+            fileTransferPanel.add(this.txtRemoteFilePath);
 
+            // txtCommandOutput
+            final JTextArea txtCommandOutput = new JTextArea();
+            txtCommandOutput.setBackground(Color.GRAY);
+            txtCommandOutput.setEnabled(false);
+            txtCommandOutput.setText("Command Output Panel (2019):\n\n>\n");
+            layout.putConstraint(SpringLayout.WEST, txtCommandOutput, 0, SpringLayout.WEST, buttonsPanel);
+            layout.putConstraint(SpringLayout.EAST, txtCommandOutput, 0, SpringLayout.EAST, buttonsPanel);
+            layout.putConstraint(SpringLayout.NORTH, txtCommandOutput, 4, SpringLayout.SOUTH, fileTransferPanel);
+            layout.putConstraint(SpringLayout.SOUTH, txtCommandOutput, -4, SpringLayout.SOUTH, this);
+            this.add(txtCommandOutput);
+
+            // fileTransferPanel
             layout.putConstraint(SpringLayout.NORTH, fileTransferPanel, 4, SpringLayout.SOUTH, buttonsPanel);
+            layout.putConstraint(SpringLayout.WEST, fileTransferPanel, 0, SpringLayout.WEST, buttonsPanel);
+            layout.putConstraint(SpringLayout.EAST, fileTransferPanel, 0, SpringLayout.EAST, buttonsPanel);
             this.add(fileTransferPanel);
         }
-
-        // Bottom
-        final JTextArea txtArea = new JTextArea();
-        txtArea.setBackground(Color.GRAY);
-        txtArea.setEnabled(false);
-        txtArea.setText("Command Output Panel (2019):\n\n>\n");
-        this.add(txtArea);
     }
 
     private void whoAmI(final ActionEvent e) {
