@@ -15,11 +15,15 @@ import javax.swing.SpringLayout;
 public class CommandPane extends JPanel {
     private static final long serialVersionUID = -5550674321804283838L;
 
+    private final CommandController controller;
+
     private final JTextField txtLocalFilePath, txtRemoteFilePath;
     private final JTextArea txtCommandOutput;
 
-    public CommandPane() {
+    public CommandPane(final CommandController controller) {
         super();
+        this.controller = controller;
+
         final SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
 
@@ -27,31 +31,31 @@ public class CommandPane extends JPanel {
         buttonsPanel.setPreferredSize(new Dimension(0, 500));
 
         final JButton btnWhoAmI = new JButton("whoami /all");
-        btnWhoAmI.addActionListener(this::whoAmI);
+        btnWhoAmI.addActionListener(this.controller::whoAmI);
         buttonsPanel.add(btnWhoAmI);
 
         final JButton btnSystemInfo = new JButton("systeminfo");
-        btnSystemInfo.addActionListener(this::systemInfo);
+        btnSystemInfo.addActionListener(this.controller::systemInfo);
         buttonsPanel.add(btnSystemInfo);
 
         final JButton btnSchTasks = new JButton("schtasks");
-        btnSchTasks.addActionListener(this::schTasks);
+        btnSchTasks.addActionListener(this.controller::schTasks);
         buttonsPanel.add(btnSchTasks);
 
         final JButton btnNetconfig = new JButton("net config workstation");
-        btnNetconfig.addActionListener(this::netconfig);
+        btnNetconfig.addActionListener(this.controller::netconfig);
         buttonsPanel.add(btnNetconfig);
 
         final JButton btnTaskList = new JButton("tasklist");
-        btnTaskList.addActionListener(this::taskList);
+        btnTaskList.addActionListener(this.controller::taskList);
         buttonsPanel.add(btnTaskList);
 
         final JButton btnIpconfig = new JButton("ipconfig /all");
-        btnIpconfig.addActionListener(this::ipconfig);
+        btnIpconfig.addActionListener(this.controller::ipconfig);
         buttonsPanel.add(btnIpconfig);
 
         final JButton btnNetstat = new JButton("netstat -ano");
-        btnNetstat.addActionListener(this::netstat);
+        btnNetstat.addActionListener(this.controller::netstat);
         buttonsPanel.add(btnNetstat);
 
         layout.putConstraint(SpringLayout.NORTH, buttonsPanel, 4, SpringLayout.NORTH, this);
@@ -107,7 +111,7 @@ public class CommandPane extends JPanel {
             txtCommandOutput = new JTextArea();
             txtCommandOutput.setBackground(Color.GRAY);
             txtCommandOutput.setEnabled(false);
-            txtCommandOutput.setText("Command Output Panel (2019):\r\n\r\n> ");
+            txtCommandOutput.setText("Command Output Panel (2019):\r\n\r\n>\r\n");
             layout.putConstraint(SpringLayout.WEST, txtCommandOutput, 0, SpringLayout.WEST, buttonsPanel);
             layout.putConstraint(SpringLayout.EAST, txtCommandOutput, 0, SpringLayout.EAST, buttonsPanel);
             layout.putConstraint(SpringLayout.NORTH, txtCommandOutput, 4, SpringLayout.SOUTH, fileTransferPanel);
@@ -122,48 +126,12 @@ public class CommandPane extends JPanel {
         }
     }
 
-    private void whoAmI(final ActionEvent e) {
-        this.log("whoami");
-    }
-
-    private void systemInfo(final ActionEvent e) {
-        this.log("systeminfo");
-    }
-
-    private void netconfig(final ActionEvent e) {
-        this.log("netconfig");
-    }
-
-    private void schTasks(final ActionEvent e) {
-        this.log("schtasks");
-    }
-
-    private void taskList(final ActionEvent e) {
-        this.log("task list");
-    }
-
-    private void ipconfig(final ActionEvent e) {
-        this.log("ipconfig");
-    }
-
-    private void netstat(final ActionEvent e) {
-        this.log("netstat");
-    }
-
-    private void upload(final ActionEvent e) {
-        this.log("upload");
-    }
-
-    private void download(final ActionEvent e) {
-        this.log("download");
-    }
-
     private void selectLocalFile(final ActionEvent e) {
         this.log("select local file");
     }
 
     private void log(final String text) {
-        this.txtCommandOutput.setText(this.txtCommandOutput.getText() + text + "\r\n> ");
+        this.txtCommandOutput.setText(this.txtCommandOutput.getText() + text + "\r\n>\r\n");
     }
 
 }
