@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -17,7 +18,7 @@ public class CommandPane extends JPanel {
 
     private final CommandController controller;
 
-    private final JTextField txtLocalFilePath, txtRemoteFilePath;
+    private final JTextField txtRemoteIPAddress, txtLocalFilePath, txtRemoteFilePath;
     private final JTextArea txtCommandOutput;
 
     public CommandPane(final CommandController controller) {
@@ -26,6 +27,8 @@ public class CommandPane extends JPanel {
 
         final SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
+
+        this.txtRemoteIPAddress = new JTextField(16);
 
         final JPanel buttonsPanel = new JPanel();
         buttonsPanel.setPreferredSize(new Dimension(0, 500));
@@ -58,12 +61,20 @@ public class CommandPane extends JPanel {
         btnNetstat.addActionListener(e -> this.controller.netstat());
         buttonsPanel.add(btnNetstat);
 
-        layout.putConstraint(SpringLayout.NORTH, buttonsPanel, 4, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.NORTH, buttonsPanel, 4, SpringLayout.SOUTH, this.txtRemoteIPAddress);
         layout.putConstraint(SpringLayout.SOUTH, buttonsPanel, 72, SpringLayout.SOUTH, btnNetstat);
         layout.putConstraint(SpringLayout.WEST, buttonsPanel, 4, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.EAST, buttonsPanel, -4, SpringLayout.EAST, this);
         this.add(buttonsPanel);
 
+        final JLabel lblIPAddress = new JLabel("Remote IP:");
+        layout.putConstraint(SpringLayout.NORTH, lblIPAddress, 4, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.WEST, lblIPAddress, 4, SpringLayout.WEST, this);
+        this.add(lblIPAddress);
+
+        layout.putConstraint(SpringLayout.NORTH, this.txtRemoteIPAddress, 4, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.WEST, this.txtRemoteIPAddress, 4, SpringLayout.EAST, lblIPAddress);
+        this.add(this.txtRemoteIPAddress);
         {
             final SpringLayout fileTransferLayout = new SpringLayout();
             final JPanel fileTransferPanel = new JPanel(fileTransferLayout);
