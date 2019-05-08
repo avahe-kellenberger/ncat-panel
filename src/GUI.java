@@ -21,7 +21,7 @@ public class GUI extends JFrame {
         final Container contentPane = this.getContentPane();
         this.tabbedPane = new JTabbedPane();
         contentPane.add(tabbedPane);
-        this.addTab(new CommandPane());
+        this.addTab(new CommandPane(new WindowsCommandController()));
     }
 
     private void addTab(final CommandPane tab) {
