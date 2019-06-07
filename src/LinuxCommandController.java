@@ -1,39 +1,39 @@
 public class LinuxCommandController implements CommandController {
 
-    public ProcessBuilder whoAmI() {
-        return new ProcessBuilder("whoami");
+    public String whoAmI() {
+        return"whoami";
     }
 
-    public ProcessBuilder systemInfo() {
-        return new ProcessBuilder("whoami");
+    public String systemInfo() {
+        return"whoami";
     }
 
-    public ProcessBuilder netconfig() {
-        return new ProcessBuilder("whoami");
+    public String netconfig() {
+        return"whoami";
     }
 
-    public ProcessBuilder schTasks() {
-        return new ProcessBuilder("whoami");
+    public String schTasks() {
+        return"whoami";
     }
 
-    public ProcessBuilder taskList() {
-        return new ProcessBuilder("whoami");
+    public String taskList() {
+        return"whoami";
     }
 
-    public ProcessBuilder ipconfig() {
-        return new ProcessBuilder("whoami");
+    public String ipconfig() {
+        return"whoami";
     }
 
-    public ProcessBuilder netstat() {
-        return new ProcessBuilder("whoami");
+    public String netstat() {
+        return"whoami";
     }
 
-    public ProcessBuilder upload() {
-        return new ProcessBuilder("whoami");
+    public String upload() {
+        return"whoami";
     }
 
-    public ProcessBuilder download() {
-        return new ProcessBuilder("whoami");
+    public String download() {
+        return"whoami";
     }
 
 

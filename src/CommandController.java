@@ -3,22 +3,22 @@
  */
 public interface CommandController {
 
-    public ProcessBuilder whoAmI();
+    public String whoAmI();
 
-    public ProcessBuilder systemInfo();
+    public String systemInfo();
 
-    public ProcessBuilder netconfig();
+    public String netconfig();
 
-    public ProcessBuilder schTasks();
+    public String schTasks();
 
-    public ProcessBuilder taskList();
+    public String taskList();
 
-    public ProcessBuilder ipconfig();
+    public String ipconfig();
 
-    public ProcessBuilder netstat();
+    public String netstat();
 
-    public ProcessBuilder upload();
+    public String upload();
 
-    public ProcessBuilder download();
+    public String download();
 
 }

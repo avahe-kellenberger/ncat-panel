@@ -1,11 +1,14 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -17,10 +20,18 @@ import javax.swing.SpringLayout;
 public class CommandPane extends JPanel {
     private static final long serialVersionUID = -5550674321804283838L;
 
+    // TODO: Double check path
+    private static final String ncatPath = "C:\\Program Files (x86)\\nmap\\ncat.exe";
+
     private final CommandController controller;
 
-    private final JTextField txtRemoteIPAddress, txtLocalFilePath, txtRemoteFilePath;
+    private final JTextField txtRemoteIPAddress, txtRemotePort, txtLocalFilePath, txtRemoteFilePath;
+    private final JButton btnConnect, btnWhoAmI, btnSystemInfo, btnSchTasks, btnNetconfig, btnTaskList, btnIpconfig, btnNetstat, btnUpload, btnSelectLocalFile, btnDownload;
+
+    private final JScrollPane commandOutputScrollPane;
     private final JTextArea txtCommandOutput;
+
+    private OutputStream processOutputStream = null;
 
     public CommandPane(final CommandController controller) {
         super();
@@ -30,36 +41,39 @@ public class CommandPane extends JPanel {
         this.setLayout(layout);
 
         this.txtRemoteIPAddress = new JTextField(16);
+        this.txtRemotePort = new JTextField(6);
+        this.btnConnect = new JButton("Connect");
+        this.btnConnect.addActionListener(e -> this.connect());
 
         final JPanel buttonsPanel = new JPanel();
         buttonsPanel.setPreferredSize(new Dimension(0, 500));
 
-        final JButton btnWhoAmI = new JButton("whoami /all");
-        btnWhoAmI.addActionListener(e -> this.startProcess(this.controller.whoAmI()));
+        this.btnWhoAmI = new JButton("whoami /all");
+        this.btnWhoAmI.addActionListener(e -> this.runCommand(this.controller.whoAmI()));
         buttonsPanel.add(btnWhoAmI);
 
-        final JButton btnSystemInfo = new JButton("systeminfo");
-        btnSystemInfo.addActionListener(e -> this.startProcess(this.controller.systemInfo()));
+        this.btnSystemInfo = new JButton("systeminfo");
+        this.btnSystemInfo.addActionListener(e -> this.runCommand(this.controller.systemInfo()));
         buttonsPanel.add(btnSystemInfo);
 
-        final JButton btnSchTasks = new JButton("schtasks");
-        btnSchTasks.addActionListener(e -> this.startProcess(this.controller.schTasks()));
+        this.btnSchTasks = new JButton("schtasks");
+        this.btnSchTasks.addActionListener(e -> this.runCommand(this.controller.schTasks()));
         buttonsPanel.add(btnSchTasks);
 
-        final JButton btnNetconfig = new JButton("net config workstation");
-        btnNetconfig.addActionListener(e -> this.startProcess(this.controller.netconfig()));
+        this.btnNetconfig = new JButton("net config workstation");
+        this.btnNetconfig.addActionListener(e -> this.runCommand(this.controller.netconfig()));
         buttonsPanel.add(btnNetconfig);
 
-        final JButton btnTaskList = new JButton("tasklist");
-        btnTaskList.addActionListener(e -> this.startProcess(this.controller.taskList()));
+        this.btnTaskList = new JButton("tasklist");
+        this.btnTaskList.addActionListener(e -> this.runCommand(this.controller.taskList()));
         buttonsPanel.add(btnTaskList);
 
-        final JButton btnIpconfig = new JButton("ipconfig /all");
-        btnIpconfig.addActionListener(e -> this.startProcess(this.controller.ipconfig()));
+        this.btnIpconfig = new JButton("ipconfig /all");
+        this.btnIpconfig.addActionListener(e -> this.runCommand(this.controller.ipconfig()));
         buttonsPanel.add(btnIpconfig);
 
-        final JButton btnNetstat = new JButton("netstat -ano");
-        btnNetstat.addActionListener(e -> this.startProcess(this.controller.netstat()));
+        this.btnNetstat = new JButton("netstat -ano");
+        this.btnNetstat.addActionListener(e -> this.runCommand(this.controller.netstat()));
         buttonsPanel.add(btnNetstat);
 
         layout.putConstraint(SpringLayout.NORTH, buttonsPanel, 4, SpringLayout.SOUTH, this.txtRemoteIPAddress);
@@ -76,23 +90,40 @@ public class CommandPane extends JPanel {
         layout.putConstraint(SpringLayout.NORTH, this.txtRemoteIPAddress, 4, SpringLayout.NORTH, this);
         layout.putConstraint(SpringLayout.WEST, this.txtRemoteIPAddress, 4, SpringLayout.EAST, lblIPAddress);
         this.add(this.txtRemoteIPAddress);
+
+        final JLabel lblPort = new JLabel("Port");
+        layout.putConstraint(SpringLayout.NORTH, lblPort, 0, SpringLayout.NORTH, lblIPAddress);
+        layout.putConstraint(SpringLayout.SOUTH, lblPort, 0, SpringLayout.SOUTH, lblIPAddress);
+        layout.putConstraint(SpringLayout.WEST, lblPort, 8, SpringLayout.EAST, this.txtRemoteIPAddress);
+        this.add(lblPort);
+
+        layout.putConstraint(SpringLayout.NORTH, this.txtRemotePort, 0, SpringLayout.NORTH, this.txtRemoteIPAddress);
+        layout.putConstraint(SpringLayout.SOUTH, this.txtRemotePort, 0, SpringLayout.SOUTH, this.txtRemoteIPAddress);
+        layout.putConstraint(SpringLayout.WEST, this.txtRemotePort, 4, SpringLayout.EAST, lblPort);
+        this.add(this.txtRemotePort);
+
+        layout.putConstraint(SpringLayout.NORTH, this.btnConnect, 0, SpringLayout.NORTH, this.txtRemotePort);
+        layout.putConstraint(SpringLayout.SOUTH, this.btnConnect, 0, SpringLayout.SOUTH, this.txtRemotePort);
+        layout.putConstraint(SpringLayout.WEST, this.btnConnect, 8, SpringLayout.EAST, this.txtRemotePort);
+        this.add(this.btnConnect);
+
         {
             final SpringLayout fileTransferLayout = new SpringLayout();
             final JPanel fileTransferPanel = new JPanel(fileTransferLayout);
             fileTransferPanel.setPreferredSize(new Dimension(0, 85));
 
-            final JButton btnUpload = new JButton("Upload");
+            this.btnUpload = new JButton("Upload");
             this.txtLocalFilePath = new JTextField(24);
             this.txtLocalFilePath.setPreferredSize(new Dimension(0, 24));
-            final JButton btnSelectLocalFile = new JButton("Select local file...");
-            final JButton btnDownload = new JButton("Download");
+            this.btnSelectLocalFile = new JButton("Select local file...");
+            this.btnDownload = new JButton("Download");
             this.txtRemoteFilePath = new JTextField(24);
             this.txtRemoteFilePath.setPreferredSize(new Dimension(0, 24));
 
             // btnUpload
             fileTransferLayout.putConstraint(SpringLayout.WEST, btnUpload, 0, SpringLayout.WEST, fileTransferPanel);
             fileTransferLayout.putConstraint(SpringLayout.EAST, btnUpload, 0, SpringLayout.EAST, this.txtLocalFilePath);
-            btnUpload.addActionListener(e -> this.startProcess(this.controller.upload()));
+            this.btnUpload.addActionListener(e -> this.runCommand(this.controller.upload()));
             fileTransferPanel.add(btnUpload);
 
             // txtLocalFilePath
@@ -104,14 +135,14 @@ public class CommandPane extends JPanel {
             fileTransferLayout.putConstraint(SpringLayout.WEST, btnSelectLocalFile, 4, SpringLayout.EAST, this.txtLocalFilePath);
             fileTransferLayout.putConstraint(SpringLayout.NORTH, btnSelectLocalFile, 0, SpringLayout.NORTH, this.txtLocalFilePath);
             fileTransferLayout.putConstraint(SpringLayout.SOUTH, btnSelectLocalFile, 0, SpringLayout.SOUTH, this.txtLocalFilePath);
-            btnSelectLocalFile.addActionListener(e -> this.selectLocalFile());
+            this.btnSelectLocalFile.addActionListener(e -> this.selectLocalFile());
             fileTransferPanel.add(btnSelectLocalFile);
 
             // btnDownload
             fileTransferLayout.putConstraint(SpringLayout.NORTH, btnDownload, 0, SpringLayout.NORTH, btnUpload);
             fileTransferLayout.putConstraint(SpringLayout.WEST, btnDownload, 0, SpringLayout.WEST, btnSelectLocalFile);
             fileTransferLayout.putConstraint(SpringLayout.EAST, btnDownload, 0, SpringLayout.EAST, btnSelectLocalFile);
-            btnDownload.addActionListener(e -> this.startProcess(this.controller.download()));
+            this.btnDownload.addActionListener(e -> this.runCommand(this.controller.download()));
             fileTransferPanel.add(btnDownload);
 
             // txtRemoteFilePath
@@ -120,15 +151,16 @@ public class CommandPane extends JPanel {
             fileTransferPanel.add(this.txtRemoteFilePath);
 
             // txtCommandOutput
-            txtCommandOutput = new JTextArea();
-            txtCommandOutput.setBackground(new Color(18, 18, 18));
-            txtCommandOutput.setEnabled(false);
-            txtCommandOutput.setText("Command Output Panel:\r\n\r\n>\r\n");
-            layout.putConstraint(SpringLayout.WEST, txtCommandOutput, 0, SpringLayout.WEST, buttonsPanel);
-            layout.putConstraint(SpringLayout.EAST, txtCommandOutput, 0, SpringLayout.EAST, buttonsPanel);
-            layout.putConstraint(SpringLayout.NORTH, txtCommandOutput, 4, SpringLayout.SOUTH, fileTransferPanel);
-            layout.putConstraint(SpringLayout.SOUTH, txtCommandOutput, -4, SpringLayout.SOUTH, this);
-            this.add(txtCommandOutput);
+            this.txtCommandOutput = new JTextArea();
+            this.commandOutputScrollPane = new JScrollPane(this.txtCommandOutput);
+            this.txtCommandOutput.setBackground(new Color(18, 18, 18));
+            this.txtCommandOutput.setEnabled(false);
+            this.txtCommandOutput.setText("Command Output Panel:\r\n\r\n>\r\n");
+            layout.putConstraint(SpringLayout.WEST, this.commandOutputScrollPane, 0, SpringLayout.WEST, buttonsPanel);
+            layout.putConstraint(SpringLayout.EAST, this.commandOutputScrollPane, 0, SpringLayout.EAST, buttonsPanel);
+            layout.putConstraint(SpringLayout.NORTH, this.commandOutputScrollPane, 4, SpringLayout.SOUTH, fileTransferPanel);
+            layout.putConstraint(SpringLayout.SOUTH, this.commandOutputScrollPane, -4, SpringLayout.SOUTH, this);
+            this.add(this.commandOutputScrollPane);
 
             // fileTransferPanel
             layout.putConstraint(SpringLayout.NORTH, fileTransferPanel, 4, SpringLayout.SOUTH, buttonsPanel);
@@ -136,16 +168,65 @@ public class CommandPane extends JPanel {
             layout.putConstraint(SpringLayout.EAST, fileTransferPanel, 0, SpringLayout.EAST, buttonsPanel);
             this.add(fileTransferPanel);
         }
+
+        this.setCommandComponentsEnabled(false);
     }
 
-    private void startProcess(final ProcessBuilder processBuilder) {
+    /**
+     * Enables or disables each component which requires a live netcat connection.
+     * @param enabled If the components should be enabled.
+     */
+    private void setCommandComponentsEnabled(final boolean enabled) {
+        this.btnNetstat.setEnabled(enabled);
+        this.btnNetconfig.setEnabled(enabled);
+        this.btnSchTasks.setEnabled(enabled);
+        this.btnTaskList.setEnabled(enabled);
+        this.btnUpload.setEnabled(enabled);
+        this.btnDownload.setEnabled(enabled);
+        this.btnIpconfig.setEnabled(enabled);
+        this.btnSystemInfo.setEnabled(enabled);
+        this.btnWhoAmI.setEnabled(enabled);
+        this.btnSelectLocalFile.setEnabled(enabled);
+        this.txtLocalFilePath.setEnabled(enabled);
+        this.txtRemoteFilePath.setEnabled(enabled);
+    }
+
+    private void connect() {
+        Process process = null;
         try {
-            final Process process = processBuilder.start();
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            this.log(reader.readLine());
+            final String command = CommandPane.ncatPath + " " + this.txtRemoteIPAddress.getText() + " " + this.txtRemotePort.getText();
+            final ProcessBuilder processBuilder = new ProcessBuilder(command);
+            process = processBuilder.start();
+            this.processOutputStream = process.getOutputStream();
+
+            this.setCommandComponentsEnabled(true);
+            this.btnConnect.setText("Disconnect");
+
+            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                this.log(reader.readLine());
+            } catch (Exception ex) {
+                this.log(ex.getMessage());
+            }
         } catch (final Exception ex) {
             this.log(ex.getMessage());
             ex.printStackTrace();
+        } finally {
+            this.setCommandComponentsEnabled(false);
+            process.destroy();
+            this.btnConnect.setText("Connect");
+            this.processOutputStream = null;
+        }
+    }
+
+    private void runCommand(final String command) {
+        if (this.processOutputStream == null) {
+            // TODO: Alert that connection is not alive
+        } else {
+            try {
+                this.processOutputStream.write(command.getBytes());
+            } catch (final IOException ex) {
+                this.log(ex.getMessage());
+            }
         }
     }
 

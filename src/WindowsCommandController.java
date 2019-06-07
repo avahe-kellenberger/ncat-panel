@@ -1,41 +1,41 @@
 public class WindowsCommandController implements CommandController {
 
-    public ProcessBuilder whoAmI() {
-        return new ProcessBuilder("whoami /all");
+    public String whoAmI() {
+        return"whoami /all";
     }
 
-    public ProcessBuilder systemInfo() {
-        return new ProcessBuilder("systeminfo");
+    public String systemInfo() {
+        return"systeminfo";
     }
 
-    public ProcessBuilder netconfig() {
-        return new ProcessBuilder("net use");
+    public String netconfig() {
+        return"net use";
     }
 
-    public ProcessBuilder schTasks() {
-        return new ProcessBuilder("schtasks");
+    public String schTasks() {
+        return"schtasks";
     }
 
-    public ProcessBuilder taskList() {
-        return new ProcessBuilder("tasklist");
+    public String taskList() {
+        return"tasklist";
     }
 
-    public ProcessBuilder ipconfig() {
-        return new ProcessBuilder("ipconfig /all");
+    public String ipconfig() {
+        return"ipconfig /all";
     }
 
-    public ProcessBuilder netstat() {
-        return new ProcessBuilder("net view");
+    public String netstat() {
+        return"net view";
     }
 
-    public ProcessBuilder upload() {
+    public String upload() {
         // TODO
-        return new ProcessBuilder("whoami");
+        return"whoami";
     }
 
-    public ProcessBuilder download() {
+    public String download() {
         // TODO
-        return new ProcessBuilder("whoami");
+        return"whoami";
     }
 
 
