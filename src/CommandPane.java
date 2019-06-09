@@ -212,10 +212,10 @@ public class CommandPane extends JPanel {
             this.btnDisconnect.setEnabled(true);
 
             this.process = processBuilder.start();
-            this.readStream().run();
-            // this.readThread = new Thread(this::readStream);
-            // this.readThread.start();
+
             this.processOutputStream = process.getOutputStream();
+            this.readThread = new Thread(this::readStream);
+            this.readThread.start();
 
         } catch (final Exception ex) {
             this.log(ex.getMessage());
@@ -226,7 +226,10 @@ public class CommandPane extends JPanel {
     private Runnable readStream() {
         return () -> {
             try (final BufferedReader reader = new BufferedReader(new InputStreamReader(this.process.getInputStream()))) {
-                this.log(reader.readLine());
+                String out = null;
+                while ((out = reader.readLine()) != null) {
+                    this.log(out);
+                }
             } catch (Exception ex) {
                 this.log(ex.getMessage());
             }
