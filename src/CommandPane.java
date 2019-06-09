@@ -26,11 +26,12 @@ public class CommandPane extends JPanel {
     private final CommandController controller;
 
     private final JTextField txtRemoteIPAddress, txtRemotePort, txtLocalFilePath, txtRemoteFilePath;
-    private final JButton btnConnect, btnWhoAmI, btnSystemInfo, btnSchTasks, btnNetconfig, btnTaskList, btnIpconfig, btnNetstat, btnUpload, btnSelectLocalFile, btnDownload;
+    private final JButton btnConnect, btnDisconnect, btnWhoAmI, btnSystemInfo, btnSchTasks, btnNetconfig, btnTaskList, btnIpconfig, btnNetstat, btnUpload, btnSelectLocalFile, btnDownload;
 
     private final JScrollPane commandOutputScrollPane;
     private final JTextArea txtCommandOutput;
 
+    private Process process = null;
     private OutputStream processOutputStream = null;
 
     public CommandPane(final CommandController controller) {
@@ -45,34 +46,38 @@ public class CommandPane extends JPanel {
         this.btnConnect = new JButton("Connect");
         this.btnConnect.addActionListener(e -> this.connect());
 
+        this.btnDisconnect = new JButton("Disconnect");
+        this.btnDisconnect.setEnabled(false);
+        this.btnDisconnect.addActionListener(e -> this.disconnect());
+
         final JPanel buttonsPanel = new JPanel();
         buttonsPanel.setPreferredSize(new Dimension(0, 500));
 
-        this.btnWhoAmI = new JButton("whoami /all");
+        this.btnWhoAmI = new JButton(this.controller.whoAmI());
         this.btnWhoAmI.addActionListener(e -> this.runCommand(this.controller.whoAmI()));
         buttonsPanel.add(btnWhoAmI);
 
-        this.btnSystemInfo = new JButton("systeminfo");
+        this.btnSystemInfo = new JButton(this.controller.systemInfo());
         this.btnSystemInfo.addActionListener(e -> this.runCommand(this.controller.systemInfo()));
         buttonsPanel.add(btnSystemInfo);
 
-        this.btnSchTasks = new JButton("schtasks");
+        this.btnSchTasks = new JButton(this.controller.schTasks());
         this.btnSchTasks.addActionListener(e -> this.runCommand(this.controller.schTasks()));
         buttonsPanel.add(btnSchTasks);
 
-        this.btnNetconfig = new JButton("net config workstation");
+        this.btnNetconfig = new JButton(this.controller.netconfig());
         this.btnNetconfig.addActionListener(e -> this.runCommand(this.controller.netconfig()));
         buttonsPanel.add(btnNetconfig);
 
-        this.btnTaskList = new JButton("tasklist");
+        this.btnTaskList = new JButton(this.controller.taskList());
         this.btnTaskList.addActionListener(e -> this.runCommand(this.controller.taskList()));
         buttonsPanel.add(btnTaskList);
 
-        this.btnIpconfig = new JButton("ipconfig /all");
+        this.btnIpconfig = new JButton(this.controller.ipconfig());
         this.btnIpconfig.addActionListener(e -> this.runCommand(this.controller.ipconfig()));
         buttonsPanel.add(btnIpconfig);
 
-        this.btnNetstat = new JButton("netstat -ano");
+        this.btnNetstat = new JButton(this.controller.netstat());
         this.btnNetstat.addActionListener(e -> this.runCommand(this.controller.netstat()));
         buttonsPanel.add(btnNetstat);
 
@@ -192,15 +197,15 @@ public class CommandPane extends JPanel {
     }
 
     private void connect() {
-        Process process = null;
         try {
             final String command = CommandPane.ncatPath + " " + this.txtRemoteIPAddress.getText() + " " + this.txtRemotePort.getText();
             final ProcessBuilder processBuilder = new ProcessBuilder(command);
-            process = processBuilder.start();
+            this.process = processBuilder.start();
             this.processOutputStream = process.getOutputStream();
 
             this.setCommandComponentsEnabled(true);
-            this.btnConnect.setText("Disconnect");
+            this.btnConnect.setEnabled(false);
+            this.btnDisconnect.setEnabled(true);
 
             try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 this.log(reader.readLine());
@@ -211,15 +216,30 @@ public class CommandPane extends JPanel {
             this.log(ex.getMessage());
             ex.printStackTrace();
         } finally {
-            this.setCommandComponentsEnabled(false);
-            process.destroy();
-            this.btnConnect.setText("Connect");
-            this.processOutputStream = null;
+            this.disconnect();
         }
     }
 
+    private void disconnect() {
+        if (this.process != null) {
+            this.process.destroy();
+            this.process = null;
+        }
+
+        if (this.processOutputStream != null) {
+            try {
+                this.processOutputStream.close();
+            } catch (final IOException ignored) {
+            }
+            this.processOutputStream = null;
+        }
+        this.setCommandComponentsEnabled(false);
+        this.btnConnect.setEnabled(true);
+        this.btnDisconnect.setEnabled(false);
+    }
+
     private void runCommand(final String command) {
-        if (this.processOutputStream == null) {
+        if (this.process == null || this.processOutputStream == null) {
             // TODO: Alert that connection is not alive
         } else {
             try {
