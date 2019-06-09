@@ -212,8 +212,9 @@ public class CommandPane extends JPanel {
             this.btnDisconnect.setEnabled(true);
 
             this.process = processBuilder.start();
-            this.readThread = new Thread(this::readStream);
-            this.readThread.start();
+            this.readStream().run();
+            // this.readThread = new Thread(this::readStream);
+            // this.readThread.start();
             this.processOutputStream = process.getOutputStream();
 
         } catch (final Exception ex) {
