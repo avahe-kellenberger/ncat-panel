@@ -112,6 +112,11 @@ public class CommandPane extends JPanel {
         layout.putConstraint(SpringLayout.WEST, this.btnConnect, 8, SpringLayout.EAST, this.txtRemotePort);
         this.add(this.btnConnect);
 
+        layout.putConstraint(SpringLayout.NORTH, this.btnDisconnect, 0, SpringLayout.NORTH, this.btnConnect);
+        layout.putConstraint(SpringLayout.SOUTH, this.btnDisconnect, 0, SpringLayout.SOUTH, this.btnConnect);
+        layout.putConstraint(SpringLayout.WEST, this.btnDisconnect, 8, SpringLayout.EAST, this.btnConnect);
+        this.add(this.btnDisconnect);
+
         {
             final SpringLayout fileTransferLayout = new SpringLayout();
             final JPanel fileTransferPanel = new JPanel(fileTransferLayout);
