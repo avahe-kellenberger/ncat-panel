@@ -21,7 +21,7 @@ public class CommandPane extends JPanel {
     private static final long serialVersionUID = -5550674321804283838L;
 
     // TODO: Double check path
-    private static final String ncatPath = "C:\\Program Files (x86)\\nmap\\ncat.exe";
+    private static final String ncatPath = "C:\\Program Files (x86)\\Nmap\\ncat.exe";
 
     private final CommandController controller;
 
