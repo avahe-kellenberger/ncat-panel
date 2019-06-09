@@ -268,6 +268,7 @@ public class CommandPane extends JPanel {
         } else {
             try {
                 this.processOutputStream.write(command.getBytes());
+                this.processOutputStream.flush();
             } catch (final IOException ex) {
                 this.log(ex.getMessage());
             }
