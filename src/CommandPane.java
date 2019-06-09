@@ -206,16 +206,16 @@ public class CommandPane extends JPanel {
     private void connect() {
         try {
             final ProcessBuilder processBuilder = new ProcessBuilder(CommandPane.ncatPath, this.txtRemoteIPAddress.getText(), this.txtRemotePort.getText());
-            this.process = processBuilder.start();
 
             this.setCommandComponentsEnabled(true);
             this.btnConnect.setEnabled(false);
             this.btnDisconnect.setEnabled(true);
 
+            this.process = processBuilder.start();
+            this.readThread = new Thread(this::readStream);
+            this.readThread.start();
             this.processOutputStream = process.getOutputStream();
 
-            this.readThread = new Thread(this::readStream);
-            readThread.start();
         } catch (final Exception ex) {
             this.log(ex.getMessage());
             ex.printStackTrace();
