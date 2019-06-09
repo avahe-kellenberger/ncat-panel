@@ -20,6 +20,8 @@ import javax.swing.SpringLayout;
 public class CommandPane extends JPanel {
     private static final long serialVersionUID = -5550674321804283838L;
 
+    private Thread readThread = null;
+
     // TODO: Double check path
     private static final String ncatPath = "C:\\Program Files (x86)\\Nmap\\ncat.exe";
 
@@ -211,11 +213,9 @@ public class CommandPane extends JPanel {
             this.btnDisconnect.setEnabled(true);
 
             this.processOutputStream = process.getOutputStream();
-            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                this.log(reader.readLine());
-            } catch (Exception ex) {
-                this.log(ex.getMessage());
-            }
+
+            this.readThread = new Thread(this::readStream);
+            readThread.start();
         } catch (final Exception ex) {
             this.log(ex.getMessage());
             ex.printStackTrace();
@@ -224,7 +224,24 @@ public class CommandPane extends JPanel {
         }
     }
 
+    private Runnable readStream() {
+        return () -> {
+            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(this.process.getInputStream()))) {
+                this.log(reader.readLine());
+            } catch (Exception ex) {
+                this.log(ex.getMessage());
+            }
+        };
+    }
+
     private void disconnect() {
+        if (this.readThread != null && this.readThread.isAlive()) {
+            this.readThread.interrupt();
+            try {
+                this.readThread.join();
+            } catch (final Exception ignored) {}
+        }
+
         if (this.process != null) {
             this.process.destroy();
             this.process = null;
