@@ -264,6 +264,7 @@ public class CommandPane extends JPanel {
     private void runCommand(final String command) {
         if (this.process == null || this.processOutputStream == null) {
             // TODO: Alert that connection is not alive
+            this.log("No live connection.");
         } else {
             try {
                 this.processOutputStream.write(command.getBytes());
