@@ -198,8 +198,7 @@ public class CommandPane extends JPanel {
 
     private void connect() {
         try {
-            final String command = CommandPane.ncatPath + " " + this.txtRemoteIPAddress.getText() + " " + this.txtRemotePort.getText();
-            final ProcessBuilder processBuilder = new ProcessBuilder(command);
+            final ProcessBuilder processBuilder = new ProcessBuilder(CommandPane.ncatPath, this.txtRemoteIPAddress.getText(), this.txtRemotePort.getText());
             this.process = processBuilder.start();
             this.processOutputStream = process.getOutputStream();
 
