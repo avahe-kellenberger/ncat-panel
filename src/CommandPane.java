@@ -205,12 +205,12 @@ public class CommandPane extends JPanel {
         try {
             final ProcessBuilder processBuilder = new ProcessBuilder(CommandPane.ncatPath, this.txtRemoteIPAddress.getText(), this.txtRemotePort.getText());
             this.process = processBuilder.start();
-            this.processOutputStream = process.getOutputStream();
 
             this.setCommandComponentsEnabled(true);
             this.btnConnect.setEnabled(false);
             this.btnDisconnect.setEnabled(true);
 
+            this.processOutputStream = process.getOutputStream();
             try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 this.log(reader.readLine());
             } catch (Exception ex) {
