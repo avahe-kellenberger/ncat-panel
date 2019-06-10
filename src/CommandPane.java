@@ -1,9 +1,8 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -34,7 +33,7 @@ public class CommandPane extends JPanel {
     private final JTextArea txtCommandOutput;
 
     private Process process = null;
-    private OutputStream processOutputStream = null;
+    private PrintWriter processOutWriter = null;
 
     public CommandPane(final CommandController controller) {
         super();
@@ -213,13 +212,14 @@ public class CommandPane extends JPanel {
 
             this.process = processBuilder.start();
 
-            this.processOutputStream = process.getOutputStream();
+            this.processOutWriter = new PrintWriter(process.getOutputStream());
             this.readThread = new Thread(this::readStream);
             this.readThread.start();
 
         } catch (final Exception ex) {
             this.log(ex.getMessage());
             ex.printStackTrace();
+            this.disconnect();
         }
     }
 
@@ -249,12 +249,9 @@ public class CommandPane extends JPanel {
             this.process = null;
         }
 
-        if (this.processOutputStream != null) {
-            try {
-                this.processOutputStream.close();
-            } catch (final IOException ignored) {
-            }
-            this.processOutputStream = null;
+        if (this.processOutWriter != null) {
+            this.processOutWriter.close();
+            this.processOutWriter = null;
         }
         this.setCommandComponentsEnabled(false);
         this.btnConnect.setEnabled(true);
@@ -262,16 +259,12 @@ public class CommandPane extends JPanel {
     }
 
     private void runCommand(final String command) {
-        if (this.process == null || this.processOutputStream == null) {
+        if (this.process == null || this.processOutWriter == null) {
             // TODO: Alert that connection is not alive
             this.log("No live connection.");
         } else {
-            try {
-                this.processOutputStream.write(command.getBytes());
-                this.processOutputStream.flush();
-            } catch (final IOException ex) {
-                this.log(ex.getMessage());
-            }
+            this.processOutWriter.print(command);
+            this.processOutWriter.flush();
         }
     }
 
