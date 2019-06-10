@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.text.DefaultCaret;
 
 /**
  * CommandPane is a panel with buttons to invoke ncat commands, with an output
@@ -164,6 +165,8 @@ public class CommandPane extends JPanel {
             // txtCommandOutput
             this.txtCommandOutput = new JTextArea();
             this.commandOutputScrollPane = new JScrollPane(this.txtCommandOutput);
+            final DefaultCaret caret = (DefaultCaret) this.txtCommandOutput.getCaret();
+            caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
             this.txtCommandOutput.setBackground(new Color(18, 18, 18));
             this.txtCommandOutput.setEnabled(false);
             this.txtCommandOutput.setText("Command Output Panel:\r\n\r\n>\r\n");
