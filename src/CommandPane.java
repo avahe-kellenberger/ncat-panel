@@ -212,7 +212,7 @@ public class CommandPane extends JPanel {
 
             this.process = processBuilder.start();
 
-            this.readThread = new Thread(this::readStream);
+            this.readThread = new Thread(this.readStream());
             this.readThread.start();
             this.processOutWriter = new PrintWriter(process.getOutputStream());
         } catch (final Exception ex) {
