@@ -135,7 +135,7 @@ public class CommandPane extends JPanel {
             // btnUpload
             fileTransferLayout.putConstraint(SpringLayout.WEST, btnUpload, 0, SpringLayout.WEST, fileTransferPanel);
             fileTransferLayout.putConstraint(SpringLayout.EAST, btnUpload, 0, SpringLayout.EAST, this.txtLocalFilePath);
-            this.btnUpload.addActionListener(e -> this.runCommand(this.controller.upload()));
+            // this.btnUpload.addActionListener(e -> this.runCommand(this.controller.upload()));
             fileTransferPanel.add(btnUpload);
 
             // txtLocalFilePath
@@ -147,14 +147,14 @@ public class CommandPane extends JPanel {
             fileTransferLayout.putConstraint(SpringLayout.WEST, btnSelectLocalFile, 4, SpringLayout.EAST, this.txtLocalFilePath);
             fileTransferLayout.putConstraint(SpringLayout.NORTH, btnSelectLocalFile, 0, SpringLayout.NORTH, this.txtLocalFilePath);
             fileTransferLayout.putConstraint(SpringLayout.SOUTH, btnSelectLocalFile, 0, SpringLayout.SOUTH, this.txtLocalFilePath);
-            this.btnSelectLocalFile.addActionListener(e -> this.selectLocalFile());
+            // this.btnSelectLocalFile.addActionListener(e -> this.selectLocalFile());
             fileTransferPanel.add(btnSelectLocalFile);
 
             // btnDownload
             fileTransferLayout.putConstraint(SpringLayout.NORTH, btnDownload, 0, SpringLayout.NORTH, btnUpload);
             fileTransferLayout.putConstraint(SpringLayout.WEST, btnDownload, 0, SpringLayout.WEST, btnSelectLocalFile);
             fileTransferLayout.putConstraint(SpringLayout.EAST, btnDownload, 0, SpringLayout.EAST, btnSelectLocalFile);
-            this.btnDownload.addActionListener(e -> this.runCommand(this.controller.download()));
+            // this.btnDownload.addActionListener(e -> this.runCommand(this.controller.download()));
             fileTransferPanel.add(btnDownload);
 
             // txtRemoteFilePath
