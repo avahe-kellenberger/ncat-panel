@@ -212,10 +212,9 @@ public class CommandPane extends JPanel {
 
             this.process = processBuilder.start();
 
-            this.processOutWriter = new PrintWriter(process.getOutputStream());
             this.readThread = new Thread(this::readStream);
             this.readThread.start();
-
+            this.processOutWriter = new PrintWriter(process.getOutputStream());
         } catch (final Exception ex) {
             this.log(ex.getMessage());
             ex.printStackTrace();
@@ -263,7 +262,8 @@ public class CommandPane extends JPanel {
             // TODO: Alert that connection is not alive
             this.log("No live connection.");
         } else {
-            this.processOutWriter.print(command);
+            this.log("Attempting to execute command: " + command);
+            this.processOutWriter.println(command);
             this.processOutWriter.flush();
         }
     }
