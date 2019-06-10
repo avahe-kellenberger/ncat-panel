@@ -262,7 +262,6 @@ public class CommandPane extends JPanel {
             // TODO: Alert that connection is not alive
             this.log("No live connection.");
         } else {
-            this.log("Attempting to execute command: " + command);
             this.processOutWriter.println(command);
             this.processOutWriter.flush();
         }
@@ -273,7 +272,7 @@ public class CommandPane extends JPanel {
     }
 
     private void log(final String text) {
-        this.txtCommandOutput.setText(this.txtCommandOutput.getText() + text + "\r\n>\r\n");
+        this.txtCommandOutput.setText(this.txtCommandOutput.getText() + text + "\r\n");
     }
 
 }
