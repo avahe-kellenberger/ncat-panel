@@ -241,9 +241,6 @@ public class CommandPane extends JPanel {
     private void disconnect() {
         if (this.readThread != null && this.readThread.isAlive()) {
             this.readThread.interrupt();
-            try {
-                this.readThread.join();
-            } catch (final Exception ignored) {}
         }
 
         if (this.process != null) {
